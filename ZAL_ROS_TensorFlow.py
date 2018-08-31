@@ -3,8 +3,6 @@
 'bounding_boxes' """
 import rospy
 from zal_object_detection.msg import BoundingBox, BoundingBoxes
-from scipy import misc
-
 import cv2
 import sys
 from cv_bridge import CvBridge
@@ -17,12 +15,8 @@ try:
 except:
     pass
 import tensorflow as tf
-from std_msgs.msg import String, Float32, UInt8, Int8
-# from tf_trt_models.detection import download_detection_model, build_detection_graph
 from sensor_msgs.msg import Image
-from rospy.numpy_msg import numpy_msg
 import numpy as np
-import tensorflow.contrib.tensorrt as trt
 
 
 def zal_create_label_dict():
