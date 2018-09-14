@@ -2,10 +2,11 @@
 """ This script is a ros node, which subscribes to an image and publishes home-made messages in the topic named
 'bounding_boxes' """
 import rospy
-from zal_object_detection.msg import BoundingBox, BoundingBoxes
+from zalamander_msgs.msg import BoundingBox, BoundingBoxes
 import cv2
 import sys
 from cv_bridge import CvBridge
+import tensorflow.contrib.tensorrt as trt
 try:
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 except:
@@ -42,7 +43,8 @@ def get_outputs(model_name='ssd_inception_v2_coco'):
         .tf_boxes: these are the coordinates of the
     """
     graph_def = tf.GraphDef()
-    with open(model_name + '_trt.pb', "rb") as f:
+    #with open(model_name + '_trt.pb', "rb") as f:
+    with open('/home/nvidia/catkin_ws/src/zal_object_detection/test_trt.pb', "rb") as f:
         graph_def.ParseFromString(f.read())
 
     # create session an import graph
@@ -67,7 +69,7 @@ class ZAL_ROS_TensorFlow():
         self.keep_prob = tf.placeholder("float")
         self.tf_sess, self.tf_input, self.tf_scores, self.tf_boxes, self.tf_classes = get_outputs()
 
-        self.sub = rospy.Subscriber('image', Image, self.callback, queue_size=1)
+        self.sub = rospy.Subscriber('camera/rgb/image_color', Image, self.callback, queue_size=1)
         self.pub = rospy.Publisher('bounding_boxes', BoundingBoxes, queue_size=1)
         self.threshold = 0.5
         self.labels = zal_create_label_dict()
