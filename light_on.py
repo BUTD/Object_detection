@@ -3,6 +3,7 @@
 detected in one of 5 preceding frames """
 
 import rospy
+import wiringpi
 import numpy as np
 from zalamander_msgs.msg import BoundingBoxes, BoundingBox
 from std_msgs.msg import Bool
@@ -10,6 +11,7 @@ from std_msgs.msg import Bool
 
 class Light():
     def __init__(self):
+        wiringpi.wiringPiSetupGpio()
         self.predictions = [0, 0, 0, 0, 0]
         self.pub = rospy.Publisher('light_on', Bool, queue_size=1)
         rospy.Subscriber('bounding_boxes', BoundingBoxes, self.callback, queue_size=1)
@@ -22,7 +24,7 @@ class Light():
         """
         person_detected = False
         for bounding_box in bounding_box_msg.bounding_boxes:
-            if bounding_box.Class == 'person':
+            if bounding_box.Class == 'person' and bounding_box.probability > 0.4:
                 person_detected = True
         if person_detected:
             self.predictions.append(1)
@@ -31,8 +33,10 @@ class Light():
         self.predictions.pop(0)
         if sum(self.predictions) > 1:
             self.pub.publish(True)
+            wiringpi.pinMode(6, 1)
         else:
             self.pub.publish(False)
+            wiringpi.pinMode(6, 0)
 
     def main(self):
         rospy.spin()
