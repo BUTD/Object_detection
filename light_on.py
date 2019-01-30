@@ -23,6 +23,11 @@ class Light():
         :return:
         from actionlib_msgs.msg import GoalID
 
+        msg = GoalID()
+		msg.stamp = rospy.Time.now()
+		msg.id = ""
+		self.pub_follow.publish(msg)
+
         self.pub_follow = rospy.Publisher('/qr_follow/cancel', GoalID, queue_size=10)
         
         """
