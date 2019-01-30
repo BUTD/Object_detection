@@ -21,7 +21,8 @@ class Light():
         if in at least two of the last 5 frames there was a person, then return True
         :param bounding_box_msg:
         :return:
-        
+        from actionlib_msgs.msg import GoalID
+
         self.pub_follow = rospy.Publisher('/qr_follow/cancel', GoalID, queue_size=10)
         
         """
